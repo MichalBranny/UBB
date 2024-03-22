@@ -1,0 +1,86 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/mrb2/projects/dotNet/avaloniaui-v1/GetStartedApp/GetStartedApp.csproj": {}
+  },
+  "projects": {
+    "/home/mrb2/projects/dotNet/avaloniaui-v1/GetStartedApp/GetStartedApp.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/mrb2/projects/dotNet/avaloniaui-v1/GetStartedApp/GetStartedApp.csproj",
+        "projectName": "GetStartedApp",
+        "projectPath": "/home/mrb2/projects/dotNet/avaloniaui-v1/GetStartedApp/GetStartedApp.csproj",
+        "packagesPath": "/home/mrb2/.nuget/packages/",
+        "outputPath": "/home/mrb2/projects/dotNet/avaloniaui-v1/GetStartedApp/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/mrb2/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "Avalonia": {
+              "target": "Package",
+              "version": "[11.0.10, )"
+            },
+            "Avalonia.Desktop": {
+              "target": "Package",
+              "version": "[11.0.10, )"
+            },
+            "Avalonia.Diagnostics": {
+              "target": "Package",
+              "version": "[11.0.10, )"
+            },
+            "Avalonia.Fonts.Inter": {
+              "target": "Package",
+              "version": "[11.0.10, )"
+            },
+            "Avalonia.ReactiveUI": {
+              "target": "Package",
+              "version": "[11.0.10, )"
+            },
+            "Avalonia.Themes.Fluent": {
+              "target": "Package",
+              "version": "[11.0.10, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/6.0.127/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
