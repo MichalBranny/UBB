@@ -1,7 +1,14 @@
-﻿using ReactiveUI;
+﻿
+// ViewModels/ViewModelBase.cs
 
-namespace GetStartedApp.ViewModels;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using ReactiveUI;
 
-public class ViewModelBase : ReactiveObject
+namespace Todo.ViewModels
 {
+    public class ViewModelBase : ReactiveObject
+    {
+    }
 }

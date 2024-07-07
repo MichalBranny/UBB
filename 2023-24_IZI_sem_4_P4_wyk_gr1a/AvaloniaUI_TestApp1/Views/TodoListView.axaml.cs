@@ -1,5 +1,5 @@
 
-// Views/MainWindow.axaml.cs
+// Views/TodoListView.axaml.cs
 
 using Avalonia;
 using Avalonia.Controls;
@@ -7,9 +7,9 @@ using Avalonia.Markup.Xaml;
 
 namespace Todo.Views
 {
-    public partial class MainWindow : Window
+    public partial class TodoListView : UserControl
     {
-        public MainWindow()
+        public TodoListView()
         {
             InitializeComponent();
         }
@@ -20,3 +20,4 @@ namespace Todo.Views
         }
     }
 }
+

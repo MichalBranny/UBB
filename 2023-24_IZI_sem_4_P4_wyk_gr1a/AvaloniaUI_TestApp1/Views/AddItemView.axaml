@@ -1,0 +1,17 @@
+
+<!-- Views/AddItemView.axaml -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             x:Class="Todo.Views.AddItemView">
+	<DockPanel>
+		<Button DockPanel.Dock="Bottom" HorizontalAlignment="Center" Command="{Binding Cancel}">Anuluj</Button>
+		<Button DockPanel.Dock="Bottom" HorizontalAlignment="Center" Command="{Binding Ok}">Dodaj</Button>
+		<TextBox AcceptsReturn="False"
+				 Text="{Binding Description}"
+				 Watermark="Wpisz treść."/>
+	</DockPanel>
+</UserControl>
+
