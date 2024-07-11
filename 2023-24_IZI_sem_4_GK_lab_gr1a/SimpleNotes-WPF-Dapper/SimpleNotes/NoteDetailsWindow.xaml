@@ -1,0 +1,19 @@
+﻿<Window x:Class="SimpleNotes.NoteDetailsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Note Details" Height="300" Width="400"
+        Background="LightGray">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock Text="Title:" FontWeight="Bold"/>
+            <TextBox Text="{Binding Note.Title}" IsReadOnly="True" Margin="0,0,0,10"/>
+            <TextBlock Text="Category:" FontWeight="Bold"/>
+            <TextBox Text="{Binding Note.Category}" Margin="0,0,0,10"/>
+            <TextBlock Text="Creation Date:" FontWeight="Bold"/>
+            <TextBox Text="{Binding Note.CreationDate}" IsReadOnly="True" Margin="0,0,0,10"/>
+            <TextBlock Text="Modification Date:" FontWeight="Bold"/>
+            <TextBox Text="{Binding Note.ModificationDate}" IsReadOnly="True" Margin="0,0,0,10"/>
+            <Button Content="Save Changes" Width="100" HorizontalAlignment="Right" Click="SaveChangesButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
