@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<!--
+    Draws a pyramid using OpenGL, then copies that scene to a
+    texture image so that it can be applied as a texture to the pyramid.
+-->
+<head>
+<meta charset="UTF-8">
+<title>Texture Pyramid from Color Buffer</title>
+<link rel="stylesheet" href="../demo.css">
+<script src="../script/demo-core.js"></script>
+<script src="../script/glsim.js"></script>
+<script src="../script/basic-object-models-IFS.js"></script>
+<script>
+
+var camera;
+
+var canvas;  // the canvas on which we will draw.
+
+var frameNumber = 0;  // frame number for the animation
+
+var pyramid;  // model data for the pyramid
+
+/*  The display function, which draws the content of the canvas. */
+function draw() {
+
+    var objectNumber = 0;  // which object to draw, here it's always pyramid.
+
+    /* First, draw the 2D scene, using a 256-by256 viewport to get a power-of-two texture. */
+    
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glDisable(GL_TEXTURE_2D);
+    glViewport(0,0,256,256);  // Note that canvas must be at least 256-by-256.
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho( 0,7, -1,5, -1,1 );  // Limits required by 2D scene
+    glMatrixMode(GL_MODELVIEW);
+    
+    draw2DScene();
+    
+    /* Copy the image into the texture. */
+    
+    glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 0, 0, 256, 256, 0);
+    
+    /* Since we do not have mipmaps for the texture, we MUST set the texture
+       minimication filter to GL_NEAREST or GL_LINEAR, since the default
+       filter requires mipmaps. */
+       
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    /* Now, draw the pyramid, with the texture */    
+    
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
+    glViewport(0,0,canvas.width,canvas.height);  // restore full viewport!
+    
+    camera.apply(); // (Sets up projection and viewing transforms.)
+
+    glClearColor( 0, 0, 0, 1 );
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glRotatef(30, 1, 0, 0);
+    glRotatef(frameNumber, 0, 1, 0);
+    drawModel(pyramid);
+}
+
+/**
+ *  Draws a model using glDrawElements.  The model data must be in the format produced by
+ *  the functions in basic-object-models-IFS.js.
+ */
+function drawModel(model) {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3,GL_FLOAT,0,model.vertexPositions);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glNormalPointer(GL_FLOAT, 0, model.vertexNormals);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(2,GL_FLOAT,0,model.vertexTextureCoords);
+    glDrawElements(GL_TRIANGLES, model.indices.length, GL_UNSIGNED_BYTE, model.indices);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);    
+}
+
+
+function initGL() {
+    glEnable(GL_LIGHT0);
+    glEnable(GL_NORMALIZE);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [ 1, 1, 1, 1 ]); // white material for texturing.
+}
+
+//----------------- Drawing the 2D scene ----------------------------------------
+
+/*
+ * Draw a simple 2D scene that will be used as a texture.
+ */
+function draw2DScene() {
+    glClearColor(0.7, 0.8, 1.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT); // Fills the scene with blue.
+    glLoadIdentity();
+
+    glColor3f(1, 0, 0);
+    glBegin(GL_POLYGON);
+    glVertex2f(0, 0);
+    glVertex2f(1, 0);
+    glVertex2f(0.5, 1);
+    glEnd();
+}
+
+var animating = false;
+
+function frame() {
+    if (animating) {
+        frameNumber++;
+        draw();
+        setTimeout(frame, 30);
+    }
+}
+
+function doAnimate() {
+    animating = document.getElementById("animate").checked;
+    if (animating) {
+        frame();
+    }
+}
+
+function init() {
+    try {
+        canvas = document.getElementById("maincanvas");
+        glsimUse(canvas, null); // ( The "null" gives an RGBA color buffer instead of RGB.
+                               //   It is needed here because the call to copyTexImage2D
+                               //   uses the RGBA format. )
+    }
+    catch (e) {
+        document.getElementById("canvas-holder").innerHTML="<p><b>Sorry, an error occurred:<br>" +
+                e + "</b></p>";
+        return;
+    }
+    initGL();
+    document.getElementById("animate").checked = false;
+    document.getElementById("animate").onchange = doAnimate;
+    camera = new Camera();
+    camera.setScale(1);
+    camera.lookAt(2, 2, 5, 0, 0, 0, 0, 1, 0);
+    camera.installTrackball(draw);
+    pyramid = pyramidModel();  // Create the pyramid model
+    draw();
+}
+
+</script>
+</head>
+<body onload="init()">
+
+<div id="content">
+
+<h3 id="headline">Drawing a Texture on a Pyramid</h3>
+
+<div id="canvas-holder">
+<canvas id="maincanvas" width="400" height="350"></canvas>
+</div>
+
+<br clear=all>
+
+<p style="text-indent:30px"><b>Animate</b>: <label><input type="checkbox" id="animate"></label></p>
+</div>
+
+
+
+<div id="help-content" style="display:none">
+<h3>About this demo...</h3>
+<p>This program demonstrates the use of the OpenGL function <i>glCopyTexImage2D</i>,
+which copies an image from the color buffer (where OpenGL draws its images) into
+a texture. This makes it possible to draw an image with OpenGL and then use
+the image as a texture on other objects.</p>
+<p>A checkbox allows you to animate the pyramid.</p>
+<p>As usual, you can rotate the pyramid using your mouse.</p>
+</div>
+
+
+
+<!-- support for help text -- do not change. -->
+<div id="help-icon">
+<img src="../image/question32.png" onclick="showDemoHelp()"
+    title="Click here for information about this demo." width="32" height="32">
+</div>
+<div id="hide-help-icon">
+<img src="../image/close32.png" onclick="showDemoHelp()"
+    title="Click here to return to the demo." width="65" height="32">
+</div>
+<div id="helpBG" style="display:none"></div>
+</body>
+</html>

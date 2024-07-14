@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<!--
+    Draws a pyramid using OpenGL, and loads the texture from an image file.
+-->
+<head>
+<meta charset="UTF-8">
+<title>Texture Pyramid from File</title>
+<link rel="stylesheet" href="../demo.css">
+<script src="../script/demo-core.js"></script>
+<script src="../script/glsim.js"></script>
+<script src="../script/basic-object-models-IFS.js"></script>
+<script>
+
+var camera;
+
+var graphics;  // for drawing on the canvas that shows the texture
+
+var frameNumber = 0;  // frame number for the animation
+
+var pyramid;  // model data for the pyramid
+
+var loadingImages = true;
+var textureImage = new Image();
+
+function draw() {
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    if (loadingImages) {
+        return;
+    }
+    
+    glEnable(GL_TEXTURE_2D);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureImage.width, textureImage.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // MUST set this since we don't have mipmaps
+    
+    glMatrixMode(GL_TEXTURE);
+    glLoadIdentity();
+    glMatrixMode(GL_MODELVIEW);
+    
+    camera.apply();
+    
+    glRotatef(30, 1, 0, 0);
+    glRotatef(frameNumber, 0, 1, 0);
+    drawModel(pyramid);
+}
+
+/**
+ *  Draws a model using glDrawElements.  The model data must be in the format produced by
+ *  the functions in basic-object-models-IFS.js.
+ */
+function drawModel(model) {
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3,GL_FLOAT,0,model.vertexPositions);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glNormalPointer(GL_FLOAT, 0, model.vertexNormals);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    glTexCoordPointer(2,GL_FLOAT,0,model.vertexTextureCoords);
+    glDrawElements(GL_TRIANGLES, model.indices.length, GL_UNSIGNED_BYTE, model.indices);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_TEXTURE_COORD_ARRAY);    
+}
+
+function initGL() {
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_DEPTH_TEST);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE, [ 1, 1, 1, 1 ]); // white, for texturing
+    glClearColor(0,0,0,1);
+}
+
+function loadImage() {
+    textureImage.onload = function() {
+        loadingImages = false;
+        glEnable(GL_TEXTURE_2D);
+        try {
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, textureImage.width, textureImage.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, textureImage);
+        } catch (e) {
+            // Some browsers (Chrome at least) get a Security error if they try to use an image from the local disk.
+            document.getElementById("headline").innerHTML="Can't access texture.<br>Note: Some browsers can't use a file from a local disk."
+            return;
+        }
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);  // MUST set this since we don't have mipmaps
+        draw();
+    }
+    textureImage.src = "../textures/brick.jpg";  // Change the file name as needed
+}
+
+var animating = false;
+
+function frame() {
+    if (animating) {
+        frameNumber++;
+        draw();
+        setTimeout(frame, 30);
+    }
+}
+
+function doAnimate() {
+    animating = document.getElementById("animate").checked;
+    if (animating) {
+        frame();
+    }
+}
+
+function init() {
+    try {
+        glsimUse("maincanvas");
+    }
+    catch (e) {
+        document.getElementById("canvas-holder").innerHTML="<p><b>Sorry, an error occurred:<br>" +
+                e + "</b></p>";
+        return;
+    }
+    initGL();
+    document.getElementById("animate").checked = false;
+    document.getElementById("animate").onchange = doAnimate;
+    camera = new Camera();
+    camera.setScale(1);
+    camera.lookAt(2, 2, 5, 0, 0, 0, 0, 1, 0);
+    camera.installTrackball(draw);
+    pyramid = pyramidModel();  // Create the pyramid model
+    loadImage();
+    draw();
+}
+
+</script>
+</head>
+<body onload="init()">
+
+<div id="content">
+
+<h3 id="headline">Drawing a Texture on a Pyramid</h3>
+
+<div id="canvas-holder">
+<canvas id="maincanvas" width="400" height="350"></canvas>
+</div>
+
+<br clear=all>
+
+<p style="text-indent:30px"><b>Animate</b>: <label><input type="checkbox" id="animate"></label></p>
+</div>
+
+
+
+<div id="help-content" style="display:none">
+<h3>About this demo...</h3>
+<p>This program demonstrates the use of the OpenGL function <i>glTexImage2D</i>,
+which loads an image from a file and uses it as a texture on a 3D object.</p>
+<p>A checkbox allows you to animate the pyramid.</p>
+<p>As usual, you can rotate the pyramid using your mouse.</p>
+</div>
+
+
+
+<!-- support for help text -- do not change. -->
+<div id="help-icon">
+<img src="../image/question32.png" onclick="showDemoHelp()"
+    title="Click here for information about this demo." width="32" height="32">
+</div>
+<div id="hide-help-icon">
+<img src="../image/close32.png" onclick="showDemoHelp()"
+    title="Click here to return to the demo." width="65" height="32">
+</div>
+<div id="helpBG" style="display:none"></div>
+</body>
+</html>
