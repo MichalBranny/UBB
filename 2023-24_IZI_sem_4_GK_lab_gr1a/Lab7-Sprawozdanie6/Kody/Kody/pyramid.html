@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Pyramid</title>
+<link rel="stylesheet" href="../demo.css">
+<script src="../script/demo-core.js"></script>
+<script src="../script/glsim.js"></script>
+<script>
+var camera;
+var animate;
+var drawBase;
+var ambientLight;
+var viewpointLight, blueLight;
+var animating = false;
+var frameNumber = 0;
+var currentMaterial = 'material1';  // Default material
+var lastMouseX = 0;
+var rotationY = 0;
+
+var materials = {
+    material1: {
+        ambient: [0.1, 0.35, 0.1, 1.0],
+        diffuse: [0.45, 0.55, 0.45, 1.0]
+    },
+    material2: {
+        ambient: [0.35, 0.1, 0.1, 1.0],
+        diffuse: [0.55, 0.45, 0.45, 1.0]
+    },
+    material3: {
+        ambient: [0.1, 0.1, 0.35, 1.0],
+        diffuse: [0.45, 0.45, 0.55, 1.0]
+    }
+};
+
+function drawFifteenSidedPolygon(r, g, b) {
+    glBegin(GL_POLYGON);
+    for (let i = 0; i < 15; i++) {
+        let angle = i * (2 * Math.PI) / 15;
+        glVertex3f(0.5 * Math.cos(angle), 0.5 * Math.sin(angle), 0.5);
+    }
+    glEnd();
+}
+
+function drawSideTriangle(angle1, angle2, color) {
+    glBegin(GL_TRIANGLES);
+    glVertex3f(0, 0, -0.5);
+    glVertex3f(0.5 * Math.cos(angle1), 0.5 * Math.sin(angle1), 0.5);
+    glVertex3f(0.5 * Math.cos(angle2), 0.5 * Math.sin(angle2), 0.5);
+    glEnd();
+}
+
+function drawPyramid(size) {
+    var material = materials[currentMaterial];
+    glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, material.ambient);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, material.diffuse);
+    glPushMatrix();
+    glScalef(size * 16, size * 16, size * 16);
+    glRotatef(90, 1, 0, 0);
+    drawFifteenSidedPolygon(1, 0, 0);
+    for (let i = 0; i < 15; i++) {
+        glPushMatrix();
+        glRotatef(i * (360 / 15), 0, 0, 1);
+        let color = [Math.random(), Math.random(), Math.random()];
+        drawSideTriangle(i * (2 * Math.PI) / 15, (i + 1) * (2 * Math.PI) / 15, color);
+        glPopMatrix();
+    }
+    glPopMatrix();
+}
+
+function uvSphere(radius, slices, stacks) {
+    var i,j;
+    for (j = 0; j < stacks; j++) {
+        var latitude1 = (Math.PI/stacks) * j - Math.PI/2;
+        var latitude2 = (Math.PI/stacks) * (j+1) - Math.PI/2;
+        var sinLat1 = Math.sin(latitude1);
+        var cosLat1 = Math.cos(latitude1);
+        var sinLat2 = Math.sin(latitude2);
+        var cosLat2 = Math.cos(latitude2);
+        glBegin(GL_TRIANGLE_STRIP);
+        for (i = 0; i <= slices; i++) {
+            var longitude = (2*Math.PI/slices) * i;
+            var sinLong = Math.sin(longitude);
+            var cosLong = Math.cos(longitude);
+            var x1 = cosLong * cosLat1;
+            var y1 = sinLong * cosLat1;
+            var z1 = sinLat1;
+            var x2 = cosLong * cosLat2;
+            var y2 = sinLong * cosLat2;
+            var z2 = sinLat2;
+            glNormal3d(x2,y2,z2);
+            glVertex3d(radius*x2,radius*y2,radius*z2);
+            glNormal3d(x1,y1,z1);
+            glVertex3d(radius*x1,radius*y1,radius*z1);
+        }
+        glEnd();
+    }
+}
+
+function lights() {
+    glColor3d(0.5,0.5,0.5);
+    var zero = [ 0, 0, 0, 1 ];
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, zero);
+    glEnable(GL_LIGHT0);
+    if (blueLight.checked) {
+        glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, [0.1, 0.1, 0.5, 1]);
+        glEnable(GL_LIGHT1);
+    }
+    else {
+        glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, zero);
+        glDisable(GL_LIGHT1);
+    }
+    glPushMatrix();
+    glRotated((frameNumber-100)*1.3057, 0, 1, 0);
+    glTranslated(9.5, 7.5, 0);
+    glLightfv(GL_LIGHT1, GL_POSITION, zero);
+    uvSphere(0.5, 16, 8);
+    glPopMatrix();
+    glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION, zero);
+}
+
+function drawCylinder() {
+    var i;
+    glBegin(GL_TRIANGLE_STRIP);
+    for (i = 0; i <= 64; i++) {
+        var angle = 2*Math.PI/64 * i;
+        var x = Math.cos(angle);
+        var y = Math.sin(angle);
+        glColor3d(1, 1, 1);
+        glNormal3d( x, y, 0 );
+        glVertex3d( x, y, 1 );
+        glVertex3d( x, y, -1 );
+    }
+    glEnd();
+    glNormal3d( 0, 0, 1 );
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3d(1, 1, 1);
+    glVertex3d( 0, 0, 1);
+    for (i = 0; i <= 64; i++) {
+        var angle = 2*Math.PI/64 * i;
+        var x = Math.cos(angle);
+        var y = Math.sin(angle);
+        glVertex3d( x, y, 1 );
+    }
+    glEnd();
+    glNormal3f( 0, 0, -1 );  
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3d(1, 1, 1);
+    glVertex3d( 0, 0, -1);
+    for (i = 64; i >= 0; i--) {
+        var angle = 2*Math.PI/64 * i;
+        var x = Math.cos(angle);
+        var y = Math.sin(angle);
+        glVertex3d( x, y, -1 );
+    }
+    glEnd();    
+}
+
+function display() {
+    glClearColor(0,0,0,1);
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT ); 
+    camera.apply();
+    lights();
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, [0.15, 0.15, 0.15, 1])
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [0, 0, 0, 1] );
+    glPushMatrix();
+    glTranslated(0, -5, 0);
+    glRotated(-90, 1, 0, 0);
+    glRotated(rotationY, 0, 1, 0);  // Rotate the base
+    glScaled(10,10,0.5);
+    drawCylinder();
+    glPopMatrix();
+    glColor3d(1,0,0);
+    glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, [0.2, 0.2, 0.2, 1]);
+    glPushMatrix();
+    glTranslatef(0,0.68,0);
+    glScalef(0.65,0.65,0.65);
+    drawPyramid(1);
+    glPopMatrix();
+}
+
+function initGL() {
+    glClearColor(0, 0, 0, 1);  
+    glEnable(GL_DEPTH_TEST); 
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_NORMALIZE);
+    glEnable(GL_COLOR_MATERIAL);
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, 1);
+    glMateriali(GL_FRONT_AND_BACK, GL_SHININESS, 32);
+    var dim = [ 0.5, 0.5, 0.5, 1 ];
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, dim);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, dim);
+    var blue = [0.1, 0.1, 0.5, 1];
+    var bluea = [0.05, 0.05, 0.1, 1];
+    glLightfv(GL_LIGHT1, GL_AMBIENT, bluea);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE, blue);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, blue);
+}
+
+function doFrame() {
+    if (animating) {
+        frameNumber++;
+        display();
+        setTimeout(doFrame, 30);
+    }
+}
+
+function handleMouseDown(event) {
+    lastMouseX = event.clientX;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+}
+
+function handleMouseMove(event) {
+    var deltaX = event.clientX - lastMouseX;
+    rotationY += deltaX * 0.5;  // Adjust the rotation speed if necessary
+    lastMouseX = event.clientX;
+    display();
+}
+
+function handleMouseUp() {
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+}
+
+function init() {
+    try {
+        glsimUse("maincanvas");
+    }
+    catch (e) {
+        document.getElementById("canvas-holder").innerHTML="<p><b>Sorry, an error occurred:<br>" +
+                e + "</b></p>";
+        return;
+    }
+    animate = document.getElementById("animate");
+    drawBase = document.getElementById("drawBase");
+    ambientLight = document.getElementById("ambientLight");
+    viewpointLight = document.getElementById("viewpointLight");
+    blueLight = document.getElementById("blueLight");
+    animate.checked = false;
+    blueLight.checked = true;
+    blueLight.onchange = display;
+    animate.onchange = function() {
+        if (animate.checked) {
+            animating = true;
+            doFrame();
+        }
+        else {
+            animating = false;
+        }
+    }
+    initGL();
+    camera = new Camera();
+    camera.lookAt(0,0,30, 0,0,0, 0,1,0);
+    camera.setScale(15);
+    camera.installTrackball(display);
+    
+    var canvas = document.getElementById('maincanvas');
+    canvas.addEventListener('mousedown', handleMouseDown);
+
+    document.getElementById('material1').onchange = function() { currentMaterial = 'material1'; display(); };
+    document.getElementById('material2').onchange = function() { currentMaterial = 'material2'; display(); };
+    document.getElementById('material3').onchange = function() { currentMaterial = 'material3'; display(); };
+
+    display();
+}
+</script>
+</head>
+<body onload="init()">
+<div id="content">
+<h3 id="headline">Pyramid</h3>
+<div id="canvas-holder">
+<canvas id="maincanvas" width="400" height="400"></canvas>
+</div>
+<div id="tools">
+<p>
+<label><input type="checkbox" id="animate">Animate</label><br><br>
+<label><input type="checkbox" id="blueLight">Blue Light</label><br><br>
+<label><input type="radio" name="material" id="material1" checked>Material 1</label><br>
+<label><input type="radio" name="material" id="material2">Material 2</label><br>
+<label><input type="radio" name="material" id="material3">Material 3</label><br>
+</p>
+</div>
+</div>
+</body>
+</html>
