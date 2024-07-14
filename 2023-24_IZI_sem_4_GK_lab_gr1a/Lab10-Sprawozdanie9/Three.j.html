@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biały Goniec - Three.js</title>
+    <style>
+        body { margin: 0; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Ustawienia sceny
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(77, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Definicja punktów dla geometrii obrotowej gońca
+        const points = [];
+        points.push(new THREE.Vector2(0, 0)); // Punkt startowy na osi Y
+        points.push(new THREE.Vector2(2, 0)); // Podstawa
+        points.push(new THREE.Vector2(2, 1)); // Dolna część podstawy
+        points.push(new THREE.Vector2(1.5, 1.2)); // Dolna część tułowia
+        points.push(new THREE.Vector2(1.5, 2)); // Górna część tułowia
+        points.push(new THREE.Vector2(1, 2.2)); // Początek szyi
+        points.push(new THREE.Vector2(1, 5)); // Koniec szyi (dwa razy dłuższa)
+        points.push(new THREE.Vector2(1.5, 5.2)); // Dolna część głowy
+        points.push(new THREE.Vector2(1.2, 6.2)); // Środkowa część głowy
+        points.push(new THREE.Vector2(1.5, 6.7)); // Górna część głowy
+        points.push(new THREE.Vector2(0, 6.7)); // Punkt końcowy na osi Y
+
+        // Tworzenie geometrii obrotowej
+        const latheGeometry = new THREE.LatheGeometry(points, 32);
+
+        // Tworzenie materiału
+        const material = new THREE.MeshLambertMaterial({ color: 0xffffff });
+
+        // Tworzenie siatki
+        const bishop = new THREE.Mesh(latheGeometry, material);
+        scene.add(bishop);
+
+        // Ustawienia światła
+        const ambientLight = new THREE.AmbientLight(0x404040); // Światło otoczenia
+        scene.add(ambientLight);
+
+        const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+        pointLight.position.set(10, 10, 10);
+        scene.add(pointLight);
+
+        // Ustawienie pozycji kamery
+        camera.position.z = 11;
+
+        // Funkcja animacji
+        function animate() {
+            requestAnimationFrame(animate);
+            bishop.rotation.y += 0.01; // Obrót gońca wokół osi Y
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Obsługa zmiany rozmiaru okna
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
