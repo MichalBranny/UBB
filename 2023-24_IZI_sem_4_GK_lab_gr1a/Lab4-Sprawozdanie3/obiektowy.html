@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Scene Graph 2D</title>
+<script>
+    var scene; 
+    var canvas;   
+    var context; 
+    var LEFT_X = -4;    
+    var RIGHT_X = 4;
+    var BOTTOM_Y = -3;
+    var TOP_Y = 3;
+    var BACKGROUND_COLOR = "white";  
+    var pixelSize;  
+    var frameNumber = 0; 
+
+    function createWorld() {
+        scene = new ComplexObject();
+        // First seesaw
+        scene.add(new TransformedObject(new FilledHendecagonWithLines(-3.4, 2.15)).setScale(1, 1));
+        scene.add(new TransformedObject(new FilledHendecagonWithLines(-1.20, 1.35)).setScale(1, 1));
+        scene.add(new Rectangle(-2.3, 1.75, 2.5, 0.15, "red", -20));
+        scene.add(new Triangle(-3.05, 1.75, 0.55, "purple"));
+
+        // Second seesaw
+        scene.add(new TransformedObject(new FilledHendecagonWithLines(-0.8, 0)).setScale(1, 1));
+        scene.add(new TransformedObject(new FilledHendecagonWithLines(1.8, -1)).setScale(1, 1));
+        scene.add(new Rectangle(0.5, -0.5, 3, 0.25, "red", -20));
+        scene.add(new Triangle(-0.5, -0.5, 0.8, "blue"));
+
+        // Third seesaw
+        scene.add(new TransformedObject(new FilledHendecagonWithLines(4.20, 2)).setScale(0.8, 0.8));
+        scene.add(new TransformedObject(new FilledHendecagonWithLines(1.45, 3)).setScale(0.8, 0.8));
+        scene.add(new Rectangle(2.25, 2, 2.5, 0.15, "red", -20));
+        scene.add(new Triangle(1.60, 2, 0.5, "green"));
+    }
+
+    function updateFrame() {
+        frameNumber++;
+        scene.subobjects.forEach(function(node) {
+            if (node instanceof TransformedObject && node.object instanceof FilledHendecagonWithLines) {
+                var polygon = node.object;
+                polygon.setRotation(frameNumber);
+            }
+        });
+    }
+
+    function SceneGraphNode() {
+        this.fillColor = null;   
+        this.strokeColor = null; 
+    }
+    SceneGraphNode.prototype.doDraw = function(g) {
+        throw "doDraw not implemented in SceneGraphNode"
+    }
+    SceneGraphNode.prototype.draw = function(g) {
+        context.save();
+        if (this.fillColor) {
+            g.fillStyle = this.fillColor;
+        }
+        if (this.strokeColor) {
+            g.strokeStyle = this.strokeColor;
+        }
+        this.doDraw(g);
+        context.restore();
+    }
+    SceneGraphNode.prototype.setFillColor = function(color) {
+        this.fillColor = color;
+        return this;
+    }
+    SceneGraphNode.prototype.setStrokeColor = function(color) {
+        this.strokeColor = color;
+        return this;
+    }
+    SceneGraphNode.prototype.setColor = function(color) {
+        this.fillColor = color;
+        this.strokeColor = color;
+        return this;
+    }
+
+    function ComplexObject() {
+        SceneGraphNode.call(this);  
+        this.subobjects = [];  
+    }
+    ComplexObject.prototype = new SceneGraphNode(); 
+    ComplexObject.prototype.add = function(node) {
+        this.subobjects.push(node);
+        return this;
+    }
+    ComplexObject.prototype.doDraw = function(g) {
+        for (var i = 0; i < this.subobjects.length; i++)
+            this.subobjects[i].draw(g);
+    }
+
+    function TransformedObject(object) {
+        SceneGraphNode.call(this);  
+        this.object = object;
+        this.rotationInDegrees = 0;
+        this.scaleX = 1;
+        this.scaleY = 1;
+        this.translateX = 0;
+        this.translateY = 0;
+    }
+    TransformedObject.prototype = new SceneGraphNode();  
+    TransformedObject.prototype.setRotation = function(angle) {
+        this.rotationInDegrees = angle;
+        return this;
+    }
+    TransformedObject.prototype.setScale = function(sx, sy) {
+        this.scaleX = sx;
+        this.scaleY = sy;
+        return this;
+    }
+    TransformedObject.prototype.setTranslation = function(dx, dy) {
+        this.translateX = dx;
+        this.translateY = dy;
+        return this;
+    }
+    TransformedObject.prototype.doDraw = function(g) {
+        g.save();
+        if (this.translateX != 0 || this.translateY != 0) {
+            g.translate(this.translateX, this.translateY);
+        }
+        if (this.rotationInDegrees != 0) {
+            g.rotate(this.rotationInDegrees / 180 * Math.PI);
+        }
+        if (this.scaleX != 1 || this.scaleY != 1) {
+            g.scale(this.scaleX, this.scaleY);
+        }
+        this.object.draw(g);
+        g.restore();
+    }
+
+    function FilledHendecagonWithLines(x, y) {
+        SceneGraphNode.call(this);
+        this.x = x;
+        this.y = y;
+        this.rotationInDegrees = 0;
+    }
+    FilledHendecagonWithLines.prototype = new SceneGraphNode();
+    FilledHendecagonWithLines.prototype.setRotation = function(angle) {
+        this.rotationInDegrees = angle;
+        return this;
+    };
+    FilledHendecagonWithLines.prototype.doDraw = function(g) {
+        const numSides = 11;
+        const radius = 0.5;
+        g.save();
+        g.translate(this.x, this.y);
+        g.rotate(this.rotationInDegrees * Math.PI / 180);
+        g.beginPath();
+        for (let i = 0; i < numSides; i++) {
+            const angle = 2 * Math.PI / numSides * i;
+            g.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+        }
+        g.closePath();
+        g.strokeStyle = "black";
+        g.fillStyle = "white";
+        g.fill();
+        g.stroke();
+        for (let i = 0; i < numSides; i++) {
+            const angle = 2 * Math.PI / numSides * i;
+            g.moveTo(0, 0);
+            g.lineTo(Math.cos(angle) * radius, Math.sin(angle) * radius);
+            g.stroke();
+        }
+        g.restore();
+    };
+
+    function Rectangle(x, y, width, height, color, rotation) {
+        SceneGraphNode.call(this);
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.color = color;
+        this.rotation = rotation;
+    }
+    Rectangle.prototype = new SceneGraphNode();
+    Rectangle.prototype.doDraw = function(g) {
+        g.save();
+        g.translate(this.x, this.y);
+        g.rotate(this.rotation * Math.PI / 180);
+        g.fillStyle = this.color;
+        g.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+        g.restore();
+    };
+
+    function Triangle(x, y, size, color) {
+        SceneGraphNode.call(this);
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.color = color;
+    }
+    Triangle.prototype = new SceneGraphNode();
+    Triangle.prototype.doDraw = function(g) {
+        g.fillStyle = this.color;
+        g.beginPath();
+        g.moveTo(this.x + 1.25 * this.size, this.y + (-0) * this.size);
+        g.lineTo(this.x + 2.0 * this.size, this.y + (-2.9) * this.size);
+        g.lineTo(this.x + 0.75 * this.size, this.y + (-2.9) * this.size);
+        g.closePath();
+        g.fill();
+    };
+
+    function draw() {
+        context.save();  
+        context.fillStyle = BACKGROUND_COLOR;  
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.fillStyle = "black";
+        applyLimits(context, LEFT_X, RIGHT_X, TOP_Y, BOTTOM_Y, false);
+        context.lineWidth = pixelSize;  
+        scene.draw(context);
+        context.restore();
+    }
+
+    function applyLimits(g, leftX, rightX, topY, bottomY, preserveAspect) {
+        var width = canvas.width;   
+        var height = canvas.height; 
+        if (preserveAspect) {
+            var aspectCanvas = Math.abs(height / width);
+            var aspectDesired = Math.abs((bottomY - topY) / (rightX - leftX));
+            var excess;
+            if (aspectCanvas > aspectDesired) {
+                excess = (bottomY - topY) * (aspectCanvas / aspectDesired - 1);
+                bottomY += excess / 2;
+                topY -= excess / 2;
+            } else if (aspectCanvas < aspectDesired) {
+                excess = (rightX - leftX) * (aspectDesired / aspectCanvas - 1);
+                rightX += excess / 2;
+                leftX -= excess / 2;
+            }
+        }
+        var pixelWidth = Math.abs((rightX - leftX) / width);
+        var pixelHeight = Math.abs((bottomY - topY) / height);
+        pixelSize = Math.min(pixelWidth, pixelHeight);
+        g.scale(width / (rightX - leftX), height / (bottomY - topY));
+        g.translate(-leftX, -topY);
+    }
+
+    var running = false;  
+    function frame() {
+        if (running) {
+            updateFrame();
+            draw();
+            requestAnimationFrame(frame);
+        }
+    }
+
+    function toggleAnimation() { 
+        var shouldRun = document.getElementById("animateCheck").checked;
+        if (shouldRun != running) {
+            running = shouldRun;
+            if (running)
+                requestAnimationFrame(frame);
+        }
+    }
+
+    function init() {
+        canvas = document.getElementById("thecanvas");
+        if (!canvas.getContext) {
+            document.getElementById("message").innerHTML = "ERROR: Canvas not supported";
+            return;
+        }
+        context = canvas.getContext("2d");
+        document.getElementById("animateCheck").checked = false; 
+        document.getElementById("animateCheck").onchange = toggleAnimation; 
+        createWorld();
+        draw();
+    }
+</script>
+</head>
+<body onload="init()" style="background-color:#EEEEEE">
+<h3>Obiektowy - Michał Branny</h3>
+<p id="message"><label><input type="checkbox" id="animateCheck"><b>Start Animation</b></label></p>
+<div style="float:left; border: 2px solid black">
+<canvas id="thecanvas" width="800" height="600" style="display:block"></canvas>
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hierarchical Scene with Rotating Polygons</title>
+    <style>
+        canvas {
+            background-color: white;
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+<canvas id="myCanvas" width="800" height="600"></canvas>
+
+<script>
+    const canvas = document.getElementById('myCanvas');
+    const context = canvas.getContext('2d');
+
+    function drawPolygon(context, x, y, radius, sides, angle) {
+        context.beginPath();
+        context.moveTo(
+            x + radius * Math.cos(angle),
+            y + radius * Math.sin(angle)
+        );
+        for (let i = 1; i < sides; i++) {
+            context.lineTo(
+                x + radius * Math.cos(angle + (i * 2 * Math.PI / sides)),
+                y + radius * Math.sin(angle + (i * 2 * Math.PI / sides))
+            );
+        }
+        context.closePath();
+        context.stroke();
+    }
+
+    function drawSeesaw(context, x, y, angle) {
+        context.save();
+        context.translate(x, y);
+        context.rotate(angle);
+        context.fillStyle = 'red';
+        context.fillRect(-50, -5, 100, 10);
+        context.restore();
+    }
+
+    function drawPivot(context, x, y, height, scale, color) {
+        context.save();
+        context.translate(x, y);
+        context.scale(scale, scale);
+        context.fillStyle = color;
+        context.beginPath();
+        context.moveTo(-10, 0);
+        context.lineTo(10, 0);
+        context.lineTo(0, -height);
+        context.closePath();
+        context.fill();
+        context.restore();
+    }
+
+    function drawScene(context, angle) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw first seesaw
+        drawPivot(context, 200, 300, 100, 2, 'purple');
+        drawSeesaw(context, 200, 100, 25);
+        drawPolygon(context, 150, 100, 50, 11, angle);
+        drawPolygon(context, 250, 90, 50, 11, angle);
+
+        // Draw second seesaw
+        drawPivot(context, 400, 500, 120, 1.5, 'green');
+        drawSeesaw(context, 400, 320, 19);
+        drawPolygon(context, 350, 310, 50, 11, angle);
+        drawPolygon(context, 450, 330, 50, 11, angle);
+
+        // Draw third seesaw
+        drawPivot(context, 600, 200, 80, 1, 'blue');
+        drawSeesaw(context, 600, 120, 0.1);
+        drawPolygon(context, 550, 115, 50, 11, angle);
+        drawPolygon(context, 650, 125, 50, 11, angle);
+    }
+
+    let angle = 0;
+
+    function animate() {
+        angle += 0.01;
+        drawScene(context, angle);
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+</body>
+</html>
