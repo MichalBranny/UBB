@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:SystemObslugiBiblioteki.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="SystemObslugiBiblioteki.Views.RegisterView"
+             x:DataType="vm:RegisterViewModel">
+
+	<UserControl.Background>
+		<ImageBrush Source="avares://SystemObslugiBiblioteki/Assets/library.jpeg" Stretch="UniformToFill"/>
+	</UserControl.Background>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<Label Grid.Row="1" Grid.Column="1" Background="Black" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Username"/>
+
+		<Border Grid.Row="1" Grid.Column="2" Background="Blue" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+			<TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding Username}"/>
+		</Border>
+
+		<Label Grid.Row="2" Grid.Column="1" Background="Black" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Password"/>
+
+		<Border Grid.Row="2" Grid.Column="2" Background="Blue" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Center">
+			<TextBox PasswordChar="*" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding Password}"/>
+		</Border>
+
+		<Button Content="Register" Grid.Row="3" Grid.Column="2" Margin="20" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding RegisterCommand}"/>
+		<Button Content="Back" Grid.Row="4" Grid.Column="2" Margin="20" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding BackCommand}"/>
+
+		<CheckBox Grid.Row="3" Grid.Column="3" Grid.ColumnSpan="2" Margin="20" Content="Admin Account (for tests only)" IsChecked="{Binding IsAdmin}"/>
+		<Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Background="Black" Content="{Binding ErrorMessage}"
+               FontSize="20" Foreground="Red"/>
+	</Grid>
+</UserControl>

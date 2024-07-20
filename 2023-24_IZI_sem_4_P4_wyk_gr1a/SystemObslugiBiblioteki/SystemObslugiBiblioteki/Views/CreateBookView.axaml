@@ -1,0 +1,47 @@
+<!-- CreateBookView.axaml -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SystemObslugiBiblioteki.ViewModels"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="SystemObslugiBiblioteki.Views.CreateBookView"
+             x:DataType="vm:CreateBookViewModel">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<Label Grid.Row="1" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Book Name"></Label>
+		<TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding BookName}"></TextBox>
+
+		<Label Grid.Row="2" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Book Author"></Label>
+		<TextBox Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="3" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Text="{Binding BookAuthor}"></TextBox>
+
+		<Label Grid.Row="3" Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Category"></Label>
+		<ComboBox Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="3" Margin="20"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  ItemsSource="{Binding BookCategories}"
+                  SelectedItem="{Binding SelectedBookCategory}" />
+
+		<Button Content="Back" Grid.Row="5" Grid.Column="3" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding BackCommand}"></Button>
+		<Button Content="Add book" Grid.Row="5" Grid.Column="4" Margin="10" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding AddBookCommand}"></Button>
+		<Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding ErrorMessage}"
+               FontSize="20" Foreground="Red"/>
+	</Grid>
+</UserControl>

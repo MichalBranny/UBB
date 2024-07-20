@@ -1,0 +1,62 @@
+<!-- DeleteBookView.axaml -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:SystemObslugiBiblioteki.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="SystemObslugiBiblioteki.Views.DeleteBookView"
+             x:DataType="viewModels:DeleteBookViewModel">
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
+			<TextBlock Text="All Books" FontSize="20" Margin="10"></TextBlock>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="Title" FontWeight="Bold" Margin="5"/>
+				<TextBlock Grid.Column="1" Text="Author" FontWeight="Bold" Margin="5"/>
+				<TextBlock Grid.Column="2" Text="BookCategory" FontWeight="Bold" Margin="5"/>
+			</Grid>
+			<ListBox ItemsSource="{Binding AllBooks}" SelectedItem="{Binding SelectedBook}" Height="200">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" Text="{Binding Title}" Margin="5"/>
+							<TextBlock Grid.Column="1" Text="{Binding Author}" Margin="5"/>
+							<TextBlock Grid.Column="2" Text="{Binding BookCategory}" Margin="5"/>
+						</Grid>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</StackPanel>
+
+		<Button x:Name="Add" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.ColumnSpan="2" Grid.Row="4" Command="{Binding DeleteBookCommand}">Delete book</Button>
+		<Button x:Name="Back" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="4" Command="{Binding ReturnToLibraryCommand}">Back</Button>
+	</Grid>
+</UserControl>
