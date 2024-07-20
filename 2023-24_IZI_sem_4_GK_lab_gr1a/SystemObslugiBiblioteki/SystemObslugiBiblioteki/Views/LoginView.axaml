@@ -1,0 +1,49 @@
+<!-- LoginView.axaml -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SystemObslugiBiblioteki.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="SystemObslugiBiblioteki.Views.LoginView"
+             x:DataType="vm:LoginViewModel">
+
+	<UserControl.Background>
+		<ImageBrush Source="avares://SystemObslugiBiblioteki/Assets/library.jpeg" Stretch="UniformToFill"/>
+	</UserControl.Background>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<Border Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Grid.ColumnSpan="3" Background="Blue" Margin="20" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+			<StackPanel Margin="10">
+				<Label Background="Black" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Username"/>
+				<TextBox Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding Username}"/>
+
+				<Label Background="Black" HorizontalAlignment="Right" VerticalAlignment="Center" Content="Password"/>
+				<TextBox PasswordChar="*" Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Center" Text="{Binding Password}"/>
+			</StackPanel>
+		</Border>
+
+		<Button Content="Login" Grid.Row="3" Grid.Column="2" Margin="20" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding LoginCommand}" HotKey="Enter"/>
+		<Button Content="Register" Grid.Row="4" Grid.Column="2" Margin="20" Background="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding RegisterCommand}"/>
+
+		<Label Grid.Row="0" Grid.Column="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding ErrorMessage}"
+               FontSize="20" Foreground="Red"/>
+
+	</Grid>
+</UserControl>

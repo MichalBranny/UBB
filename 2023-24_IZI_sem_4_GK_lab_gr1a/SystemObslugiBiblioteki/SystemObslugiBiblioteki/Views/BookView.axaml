@@ -1,0 +1,97 @@
+<!-- BooksView.axaml -->
+
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:SystemObslugiBiblioteki.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="SystemObslugiBiblioteki.Views.BooksView"
+             x:DataType="vm:BooksViewModel">
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+		<ComboBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Margin="20"
+                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                  ItemsSource="{Binding BookCategories}"
+                  SelectedItem="{Binding SelectedBookCategory}" />
+		<Button x:Name="Sort" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="3" Grid.ColumnSpan="4" Grid.Row="0" Command="{Binding SortByCommand}">Sort by category</Button>
+		<StackPanel Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2">
+			<TextBlock Text="Available Books" FontSize="20" Margin="10"></TextBlock>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="Title" FontWeight="Bold" Margin="5"/>
+				<TextBlock Grid.Column="1" Text="Author" FontWeight="Bold" Margin="5"/>
+				<TextBlock Grid.Column="2" Text="BookCategory" FontWeight="Bold" Margin="5"/>
+			</Grid>
+			<ListBox ItemsSource="{Binding AvailableBooks}" SelectedItem="{Binding SelectedAvailableBooks}" Height="200">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" Text="{Binding Title}" Margin="5"/>
+							<TextBlock Grid.Column="1" Text="{Binding Author}" Margin="5"/>
+							<TextBlock Grid.Column="2" Text="{Binding BookCategory}" Margin="5"/>
+						</Grid>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</StackPanel>
+		<StackPanel Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="2">
+			<TextBlock Text="Borrowed Books" FontSize="20" Margin="10"></TextBlock>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+				<TextBlock Grid.Column="0" Text="Title" FontWeight="Bold" Margin="5"/>
+				<TextBlock Grid.Column="1" Text="Author" FontWeight="Bold" Margin="5"/>
+				<TextBlock Grid.Column="2" Text="BookCategory" FontWeight="Bold" Margin="5"/>
+			</Grid>
+			<ListBox ItemsSource="{Binding BorrowedBooks}" SelectedItem="{Binding SelectedBorrowedBooks}" Height="200">
+				<ListBox.ItemTemplate>
+					<DataTemplate>
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+							<TextBlock Grid.Column="0" Text="{Binding Title}" Margin="5"/>
+							<TextBlock Grid.Column="1" Text="{Binding Author}" Margin="5"/>
+							<TextBlock Grid.Column="2" Text="{Binding BookCategory}" Margin="5"/>
+						</Grid>
+					</DataTemplate>
+				</ListBox.ItemTemplate>
+			</ListBox>
+		</StackPanel>
+		<Button x:Name="Add" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="1" Grid.ColumnSpan="2" Grid.Row="4" Command="{Binding BorrowBookCommand}">Borrow book</Button>
+		<Button x:Name="Remove" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="4" Grid.ColumnSpan="2" Grid.Row="5" Command="{Binding ReturnBookCommand}">Return book</Button>
+		<Button x:Name="Back" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="0" Grid.Row="4" Command="{Binding ReturnToLibraryCommand}">Back</Button>
+		<Label Grid.Row="0" Grid.Column="3" HorizontalAlignment="Stretch" VerticalAlignment="Center" Content="{Binding ErrorMessage}"
+               FontSize="20" Foreground="Red"/>
+	</Grid>
+</UserControl>

@@ -1,0 +1,91 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="500" d:DesignHeight="600"
+             x:Class="SystemObslugiBiblioteki.Views.LibraryView">
+
+	<UserControl.Background>
+		<ImageBrush Source="avares://SystemObslugiBiblioteki/Assets/library.jpeg" Stretch="UniformToFill"/>
+	</UserControl.Background>
+
+	<Grid>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+			<ColumnDefinition></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+			<RowDefinition></RowDefinition>
+		</Grid.RowDefinitions>
+
+		<Button x:Name="BorrowBook"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="Black"
+                Width="200"
+                Height="100"
+                FontSize="20"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Grid.Column="1"
+                Grid.Row="1"
+                Margin="0,0,0,20"
+                Command="{Binding BorrowBooksCommand}">
+			<TextBlock Text="Borrow or return a book"
+                       TextWrapping="Wrap"
+                       TextAlignment="Center"
+                       VerticalAlignment="Center"
+                       HorizontalAlignment="Center"/>
+		</Button>
+
+		<Button x:Name="AddBook"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="Black"
+                Width="200"
+                Height="100"
+                FontSize="20"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Grid.Column="3"
+                Grid.Row="1"
+                Margin="0,0,0,20"
+                Command="{Binding AddBookCommand}">Add book</Button>
+
+		<Button x:Name="RemoveBook"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="Black"
+                Width="200"
+                Height="100"
+                FontSize="20"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Grid.Column="3"
+                Grid.Row="2"
+                Margin="0,20,0,20"
+                Command="{Binding RemoveBookCommand}">Remove book</Button>
+
+		<Button x:Name="LogOut"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="Black"
+                Width="200"
+                Height="100"
+                FontSize="20"
+                HorizontalContentAlignment="Center"
+                VerticalContentAlignment="Center"
+                Grid.Column="1"
+                Grid.Row="2"
+                Margin="0,20,0,20"
+                Command="{Binding LogOutCommand}">Log out</Button>
+		<Label Grid.Row="0" Grid.Column="2" Content="{Binding ErrorMessage}"></Label>
+	</Grid>
+</UserControl>
